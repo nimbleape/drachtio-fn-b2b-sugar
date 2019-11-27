@@ -21,5 +21,8 @@
   },
   "devDependencies": {
     "drachtio-srf": "^4.4.21"
+  },
+  "dependencies": {
+    "deepmerge": "^4.2.2"
   }
 }
