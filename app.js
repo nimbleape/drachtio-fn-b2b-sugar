@@ -15,12 +15,12 @@ function simring(...args) {
     typeof logger.info === 'function' &&
     typeof logger.error === 'function', 'invalid logger object: must provide [debug|info|error] functions');
 
-    return function(req, res, uriList, opts, notifiers) {
+    return function(req, res, uriList, opts, notifiers, isEvolving, totalEvolvingUrisCount) {
       assert(req instanceof SipRequest);
       assert(res instanceof SipResponse);
       assert(Array.isArray(uriList));
 
-      const manager = new CallManager({req, res, uriList, opts, notifiers, logger});
+      const manager = new CallManager({req, res, uriList, opts, notifiers, logger, isEvolving, totalEvolvingUrisCount});
       return manager.simring();
     };
   }
@@ -36,7 +36,9 @@ function simring(...args) {
     uriList: args[2],
     opts: args[3] || {},
     notifiers: args[4] || {},
-    logger: noopLogger
+    logger: noopLogger,
+    isEvolving: args[5],
+    totalEvolvingUrisCount: args[6]
   };
   const manager = new CallManager(opts);
   return manager.simring();
@@ -48,14 +50,16 @@ function transfer(opts) {
 }
 
 class Simring {
-  constructor(req, res, uriList, opts, notifiers) {
+  constructor(req, res, uriList, opts, notifiers, isEvolving, totalEvolvingUrisCount) {
     const callOpts = {
       req,
       res,
       uriList: typeof uriList == 'string' ? [uriList] : (uriList || []),
       opts: opts || {},
       notifiers: notifiers || {},
-      logger: noopLogger
+      logger: noopLogger,
+      isEvolving,
+      totalEvolvingUrisCount
     } ;
     this.manager = new CallManager(callOpts);
   }
